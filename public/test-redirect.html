@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Redirect</title>
+</head>
+<body>
+    <h1>Test Navigation</h1>
+    <p>Click the link below to test navigation to bookings page:</p>
+    <a href="/example-app/public/bookings" style="font-size: 20px; color: blue;">Go to Bookings (Regular Link)</a>
+    <br><br>
+    <button onclick="window.location.href='/example-app/public/bookings'" style="font-size: 16px; padding: 10px;">
+        Go to Bookings (JavaScript)
+    </button>
+    <br><br>
+    <p id="status"></p>
+    
+    <script>
+        // Log navigation attempts
+        document.querySelector('a').addEventListener('click', function(e) {
+            document.getElementById('status').textContent = 'Navigating via link...';
+        });
+    </script>
+</body>
+</html>

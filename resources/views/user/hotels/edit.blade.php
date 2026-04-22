@@ -1,0 +1,92 @@
+@extends('layouts.app')
+
+@section('title', 'Редактировать дом')
+
+@section('content')
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="container mx-auto px-4 lg:px-8 max-w-3xl">
+        <h1 class="text-3xl font-light text-gray-900 mb-8">Редактировать дом</h1>
+
+        @if($errors->any())
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl">
+                <p class="font-medium mb-2">Ошибки:</p>
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+            <form action="{{ route('user.hotels.update', $hotel) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Название дома *</label>
+                    <input type="text" name="name" value="{{ old('name', $hotel->name) }}" required
+                           class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Краткое описание</label>
+                    <input type="text" name="short_description" value="{{ old('short_description', $hotel->short_description) }}" maxlength="500"
+                           class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Полное описание *</label>
+                    <textarea name="description" rows="6" required
+                              class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">{{ old('description', $hotel->description) }}</textarea>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Адрес *</label>
+                    <input type="text" name="address" value="{{ old('address', $hotel->address) }}" required
+                           class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Город *</label>
+                        <input type="text" name="city" value="{{ old('city', $hotel->city) }}" required
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Страна *</label>
+                        <input type="text" name="country" value="{{ old('country', $hotel->country) }}" required
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Телефон</label>
+                        <input type="text" name="phone" value="{{ old('phone', $hotel->phone) }}"
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" name="email" value="{{ old('email', $hotel->email) }}"
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-xl mb-6">
+                    <p class="text-sm">После сохранения изменений дом будет отправлен на повторную модерацию.</p>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 py-4 bg-gradient-to-r from-[#3B82F6] to-blue-600 hover:from-[#2563EB] hover:to-blue-700 text-white font-medium rounded-xl transition-all">
+                        Сохранить изменения
+                    </button>
+                    <a href="{{ route('user.hotels.index') }}" class="px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-xl transition-colors">
+                        Отмена
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
