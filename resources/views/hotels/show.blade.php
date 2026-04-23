@@ -14,8 +14,7 @@
                     Назад к домам
                 </a>
                 
-                @auth
-                    @if(auth()->user()->isAdmin())
+                @if($apiAuth->check() && $apiAuth->isAdmin())
                         <div class="flex items-center gap-2">
                             <a href="{{ route('admin.hotels.edit', $hotel) }}" 
                                class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
@@ -47,7 +46,6 @@
                             </form>
                         </div>
                     @endif
-                @endauth
             </div>
         </div>
 
@@ -222,7 +220,7 @@
                         <a href="{{ route('rooms.show', $room) }}" class="block w-full text-center py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl font-medium transition-colors">
                             Подробнее
                         </a>
-                        @auth
+                        @if($apiAuth->check())
                             <a href="{{ route('bookings.create', ['room_id' => $room->id, 'check_in' => now()->addDay()->format('Y-m-d'), 'check_out' => now()->addDays(2)->format('Y-m-d')]) }}" 
                                class="block w-full text-center py-3 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-xl font-medium transition-colors">
                                 Забронировать
@@ -231,7 +229,7 @@
                             <a href="{{ route('login') }}" class="block w-full text-center py-3 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-xl font-medium transition-colors">
                                 Войти для бронирования
                             </a>
-                        @endauth
+                        @endif
                     </div>
                 </div>
             </div>

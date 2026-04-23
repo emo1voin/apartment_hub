@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Services\ApiService;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
 {
+    public function __construct(
+        private ApiService $api,
+        private AuthService $auth
+    ) {}
+
     public function showRegistrationForm()
     {
         return view('auth.register');
@@ -17,22 +21,29 @@ class RegisterController extends Controller
 
     public function register(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|email',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'user',
-            'is_active' => true,
+        $result = $this->api->post('auth/register', [
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'password_confirmation' => $request->password_confirmation,
         ]);
 
-        Auth::login($user);
+        if (!empty($result['success']) && $result['success']) {
+            $this->auth->setToken($result['data']['token']);
+            $userData = $result['data']['user'];
+            if (isset($userData['data'])) {
+                $userData = $userData['data'];
+            }
+            $this->auth->setUser($userData);
+            return redirect()->route('hotels.index')->with('success', 'Регистрация успешна!');
+        }
 
-        return redirect()->route('hotels.index');
+        return back()->withErrors(['email' => $result['message'] ?? 'Ошибка регистрации'])->withInput();
     }
 }

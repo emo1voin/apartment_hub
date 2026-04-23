@@ -5,116 +5,78 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Hotel;
 use App\Models\Room;
+use App\Services\ApiService;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 
 class UserRoomController extends Controller
 {
+    public function __construct(
+        private ApiService $api,
+        private AuthService $auth
+    ) {}
+
     public function index()
     {
-        $rooms = Room::whereHas('hotel', function($query) {
-            $query->where('owner_id', auth()->id());
-        })->with('hotel')->latest()->paginate(10);
-        
-        return view('user.rooms.index', compact('rooms'));
+        $userId = $this->auth->id();
+        $rooms = Room::whereHas('hotel', fn($q) => $q->where('owner_id', $userId))
+            ->with('hotel')->latest()->paginate(10);
+        $hotels = Hotel::where('owner_id', $userId)->get();
+        return view('user.rooms.index', compact('rooms', 'hotels'));
     }
 
     public function create()
     {
-        $hotels = Hotel::where('owner_id', auth()->id())
-            ->where('status', 'approved')
-            ->get();
-        
-        if ($hotels->isEmpty()) {
-            return redirect()->route('user.hotels.index')
-                ->with('error', 'Сначала создайте и одобрите дом!');
+        // Админ видит все дома, обычный пользователь - только свои
+        if ($this->auth->isAdmin()) {
+            $hotels = Hotel::all();
+        } else {
+            $hotels = Hotel::where('owner_id', $this->auth->id())->get();
         }
-        
         return view('user.rooms.create', compact('hotels'));
     }
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'hotel_id' => 'required|exists:hotels,id',
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'type' => 'required|string|max:100',
-            'capacity_adults' => 'required|integer|min:1',
-            'capacity_children' => 'nullable|integer|min:0',
-            'price_per_night' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:1',
-        ]);
+        $data = $request->only(['hotel_id', 'name', 'description', 'type', 'price_per_night', 'capacity_adults', 'capacity_children']);
+        $hasFile = $request->hasFile('main_image');
+        if ($hasFile) $data['main_image'] = $request->file('main_image');
 
-        // Проверяем, что отель принадлежит пользователю
-        $hotel = Hotel::where('id', $validated['hotel_id'])
-            ->where('owner_id', auth()->id())
-            ->firstOrFail();
+        $result = $this->api->post('my/rooms', $data, $hasFile);
 
-        $room = Room::create([
-            ...$validated,
-            'total_capacity' => $validated['capacity_adults'] + ($validated['capacity_children'] ?? 0),
-            'available_quantity' => $validated['quantity'],
-            'status' => 'pending',
-            'is_active' => false,
-            'is_available' => false,
-        ]);
-
-        return redirect()->route('user.rooms.index')
-            ->with('success', 'Квартира отправлена на модерацию!');
+        if (!empty($result['success'])) {
+            return redirect()->route('user.rooms.index')->with('success', 'Квартира отправлена на модерацию!');
+        }
+        return redirect()->back()->with('error', $result['message'] ?? 'Ошибка создания')->withInput();
     }
 
-    public function edit(Room $room)
+    public function edit($id)
     {
-        // Проверяем, что комната принадлежит пользователю
-        if ($room->hotel->owner_id !== auth()->id()) {
-            abort(403);
-        }
-        
-        $hotels = Hotel::where('owner_id', auth()->id())
-            ->where('status', 'approved')
-            ->get();
-        
+        $room = Room::with('hotel')->findOrFail($id);
+        $hotels = Hotel::where('owner_id', $this->auth->id())->approved()->get();
         return view('user.rooms.edit', compact('room', 'hotels'));
     }
 
-    public function update(Request $request, Room $room)
+    public function update(Request $request, $id)
     {
-        // Проверяем, что комната принадлежит пользователю
-        if ($room->hotel->owner_id !== auth()->id()) {
-            abort(403);
+        $data = $request->only(['name', 'description', 'type', 'price_per_night', 'capacity_adults', 'capacity_children']);
+        $hasFile = $request->hasFile('main_image');
+        if ($hasFile) $data['main_image'] = $request->file('main_image');
+
+        $result = $this->api->put("my/rooms/{$id}", $data, $hasFile);
+
+        if (!empty($result['success'])) {
+            return redirect()->route('user.rooms.index')->with('success', 'Квартира обновлена!');
         }
-
-        $validated = $request->validate([
-            'hotel_id' => 'required|exists:hotels,id',
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'type' => 'required|string|max:100',
-            'capacity_adults' => 'required|integer|min:1',
-            'capacity_children' => 'nullable|integer|min:0',
-            'price_per_night' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:1',
-        ]);
-
-        $room->update([
-            ...$validated,
-            'total_capacity' => $validated['capacity_adults'] + ($validated['capacity_children'] ?? 0),
-            'status' => 'pending', // Отправляем на повторную модерацию
-        ]);
-
-        return redirect()->route('user.rooms.index')
-            ->with('success', 'Квартира обновлена и отправлена на модерацию!');
+        return redirect()->back()->with('error', $result['message'] ?? 'Ошибка обновления')->withInput();
     }
 
-    public function destroy(Room $room)
+    public function destroy($id)
     {
-        // Проверяем, что комната принадлежит пользователю
-        if ($room->hotel->owner_id !== auth()->id()) {
-            abort(403);
+        $result = $this->api->delete("my/rooms/{$id}");
+        if (!empty($result['success'])) {
+            return redirect()->route('user.rooms.index')->with('success', 'Квартира удалена.');
         }
-        
-        $room->delete();
-
-        return redirect()->route('user.rooms.index')
-            ->with('success', 'Квартира удалена.');
+        return redirect()->back()->with('error', $result['message'] ?? 'Ошибка удаления');
     }
 }

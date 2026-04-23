@@ -4,16 +4,21 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Hotel;
+use App\Services\ApiService;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 
 class UserHotelController extends Controller
 {
+    public function __construct(
+        private ApiService $api,
+        private AuthService $auth
+    ) {}
+
     public function index()
     {
-        $hotels = Hotel::where('owner_id', auth()->id())
-            ->latest()
-            ->paginate(10);
-        
+        $userId = $this->auth->id();
+        $hotels = Hotel::where('owner_id', $userId)->latest()->paginate(10);
         return view('user.hotels.index', compact('hotels'));
     }
 
@@ -24,66 +29,44 @@ class UserHotelController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'short_description' => 'nullable|string|max:500',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'country' => 'required|string|max:100',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-        ]);
+        $data = $request->only(['name', 'description', 'short_description', 'address', 'city', 'country', 'phone', 'email']);
+        $hasFile = $request->hasFile('main_image');
+        if ($hasFile) $data['main_image'] = $request->file('main_image');
 
-        $hotel = Hotel::create([
-            ...$validated,
-            'owner_id' => auth()->id(),
-            'status' => 'pending',
-            'is_active' => false,
-        ]);
+        $result = $this->api->post('my/hotels', $data, $hasFile);
 
-        return redirect()->route('user.hotels.index')
-            ->with('success', 'Дом отправлен на модерацию!');
+        if (!empty($result['success'])) {
+            return redirect()->route('user.hotels.index')->with('success', 'Дом отправлен на модерацию!');
+        }
+        return redirect()->back()->with('error', $result['message'] ?? 'Ошибка создания')->withInput();
     }
 
-    public function edit(Hotel $hotel)
+    public function edit($id)
     {
-        $this->authorize('update', $hotel);
-        
+        $hotel = Hotel::findOrFail($id);
         return view('user.hotels.edit', compact('hotel'));
     }
 
-    public function update(Request $request, Hotel $hotel)
+    public function update(Request $request, $id)
     {
-        $this->authorize('update', $hotel);
+        $data = $request->only(['name', 'description', 'short_description', 'address', 'city', 'country', 'phone', 'email']);
+        $hasFile = $request->hasFile('main_image');
+        if ($hasFile) $data['main_image'] = $request->file('main_image');
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'short_description' => 'nullable|string|max:500',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'country' => 'required|string|max:100',
-            'phone' => 'nullable|string|max:20',
-            'email' => 'nullable|email|max:255',
-        ]);
+        $result = $this->api->put("my/hotels/{$id}", $data, $hasFile);
 
-        $hotel->update([
-            ...$validated,
-            'status' => 'pending', // Отправляем на повторную модерацию
-        ]);
-
-        return redirect()->route('user.hotels.index')
-            ->with('success', 'Дом обновлён и отправлен на модерацию!');
+        if (!empty($result['success'])) {
+            return redirect()->route('user.hotels.index')->with('success', 'Дом обновлён и отправлен на модерацию!');
+        }
+        return redirect()->back()->with('error', $result['message'] ?? 'Ошибка обновления')->withInput();
     }
 
-    public function destroy(Hotel $hotel)
+    public function destroy($id)
     {
-        $this->authorize('delete', $hotel);
-        
-        $hotel->delete();
-
-        return redirect()->route('user.hotels.index')
-            ->with('success', 'Дом удалён.');
+        $result = $this->api->delete("my/hotels/{$id}");
+        if (!empty($result['success'])) {
+            return redirect()->route('user.hotels.index')->with('success', 'Дом удалён.');
+        }
+        return redirect()->back()->with('error', $result['message'] ?? 'Ошибка удаления');
     }
 }

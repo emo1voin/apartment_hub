@@ -15,8 +15,7 @@
                     <span class="text-gray-900">{{ $room->name }}</span>
                 </nav>
 
-                @auth
-                    @if(auth()->user()->isAdmin())
+                @if($apiAuth->check() && $apiAuth->isAdmin())
                         <div class="flex items-center gap-2">
                             <a href="{{ route('admin.rooms.edit', $room) }}" 
                                class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors text-sm">
@@ -41,7 +40,6 @@
                             </form>
                         </div>
                     @endif
-                @endauth
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -153,7 +151,7 @@
                             <div class="text-sm text-gray-500">за ночь</div>
                         </div>
 
-                        @auth
+                        @if($apiAuth->check())
                             <a href="{{ route('bookings.create', ['room_id' => $room->id, 'check_in' => now()->addDay()->format('Y-m-d'), 'check_out' => now()->addDays(2)->format('Y-m-d')]) }}" 
                                class="block w-full text-center py-4 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-xl font-medium transition-colors mb-4">
                                 Забронировать
@@ -163,7 +161,7 @@
                                class="block w-full text-center py-4 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-xl font-medium transition-colors mb-4">
                                 Войти для бронирования
                             </a>
-                        @endauth
+                        @endif
 
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">

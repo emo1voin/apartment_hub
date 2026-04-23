@@ -43,8 +43,6 @@
                                     <div>
                                         @if($booking->status === 'confirmed')
                                             <span class="px-3 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-full">Подтверждено</span>
-                                        @elseif($booking->status === 'pending')
-                                            <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-full">Ожидание</span>
                                         @elseif($booking->status === 'cancelled')
                                             <span class="px-3 py-1 bg-red-100 text-red-800 text-sm font-medium rounded-full">Отменено</span>
                                         @elseif($booking->status === 'completed')
@@ -56,11 +54,11 @@
                                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                                     <div>
                                         <div class="text-xs text-gray-500 mb-1">Заезд</div>
-                                        <div class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->check_in_date)->format('d.m.Y') }}</div>
+                                        <div class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->check_in)->format('d.m.Y') }}</div>
                                     </div>
                                     <div>
                                         <div class="text-xs text-gray-500 mb-1">Выезд</div>
-                                        <div class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->check_out_date)->format('d.m.Y') }}</div>
+                                        <div class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($booking->check_out)->format('d.m.Y') }}</div>
                                     </div>
                                     <div>
                                         <div class="text-xs text-gray-500 mb-1">Гости</div>

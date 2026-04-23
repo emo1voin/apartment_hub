@@ -2,7 +2,7 @@
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mt-8">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold text-gray-900">Отзывы гостей</h2>
-        @auth
+        @if($apiAuth->check())
             <button onclick="document.getElementById('reviewForm').scrollIntoView({behavior: 'smooth'})" 
                     class="px-4 py-2 bg-[#3B82F6] text-white rounded-lg hover:bg-[#2563EB] transition-colors">
                 Написать отзыв
@@ -11,7 +11,7 @@
             <a href="{{ route('login') }}" class="px-4 py-2 bg-[#3B82F6] text-white rounded-lg hover:bg-[#2563EB] transition-colors">
                 Войти чтобы написать отзыв
             </a>
-        @endauth
+        @endif
     </div>
 
     @if($hotel->reviews->count() > 0)
@@ -107,15 +107,13 @@
                                         @endif
                                     </div>
                                 </div>
-                                @auth
-                                    @if($review->user_id === auth()->id() || auth()->user()->isAdmin())
+                                @if($apiAuth->check() && ($review->user_id === $apiAuth->id() || $apiAuth->isAdmin()))
                                         <form action="{{ route('reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Удалить отзыв?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-red-600 hover:text-red-800 text-sm">Удалить</button>
                                         </form>
                                     @endif
-                                @endauth
                             </div>
 
                             <!-- Заголовок отзыва -->
@@ -169,7 +167,7 @@
     @endif
 
     <!-- Форма добавления отзыва -->
-    @auth
+    @if($apiAuth->check())
         <div id="reviewForm" class="mt-8 pt-8 border-t border-gray-200">
             <h3 class="text-xl font-semibold text-gray-900 mb-4">Написать отзыв</h3>
             <form action="{{ route('reviews.store', $hotel) }}" method="POST" class="space-y-4">
@@ -295,5 +293,5 @@
                 </button>
             </form>
         </div>
-    @endauth
+    @endif
 </div>

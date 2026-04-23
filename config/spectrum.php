@@ -114,7 +114,12 @@ return [
     |   ],
     |
     */
-    'servers' => [],
+    'servers' => [
+        [
+            'url' => env('APP_URL', 'http://localhost:8000'),
+            'description' => 'ApartmentHub API Server',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

@@ -16,26 +16,26 @@
             <!-- Десктопная навигация -->
             <nav class="hidden md:flex items-center space-x-8">
                 <a href="{{ route('hotels.index') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Квартиры</a>
-                @auth
+                @if($apiAuth->check())
                     <a href="{{ route('bookings.index') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Мои бронирования</a>
-                    @if(auth()->user()->isAdmin())
-                        <a href="{{ route('admin.hotels.create') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Добавить дом</a>
+                    @if($apiAuth->isAdmin())
+                        <a href="{{ route('admin.moderation.index') }}" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Модерация</a>
                     @endif
-                @endauth
+                @endif
             </nav>
 
             <!-- User Menu -->
             <div class="flex items-center space-x-4">
-                @auth
+                @if($apiAuth->check())
                     <div class="relative">
                         <button onclick="toggleUserMenu(event)" 
                                 type="button"
                                 id="user-menu-button"
                                 class="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors">
                             <div class="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-[#3B82F6] to-[#60A5FA] flex items-center justify-center text-white font-medium text-sm">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                {{ strtoupper(substr($apiAuth->name(), 0, 1)) }}
                             </div>
-                            <span class="text-sm font-medium text-gray-700 hidden sm:block">{{ auth()->user()->name }}</span>
+                            <span class="text-sm font-medium text-gray-700 hidden sm:block">{{ $apiAuth->name() }}</span>
                             <svg class="w-4 h-4 text-gray-400 transition-transform" id="user-menu-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
@@ -45,9 +45,9 @@
                              style="display: none;"
                              class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-[200]">
                             <div class="px-4 py-2 border-b border-gray-100">
-                                <p class="text-sm font-semibold text-gray-900">{{ auth()->user()->name }}</p>
-                                <p class="text-xs text-gray-500">{{ auth()->user()->email }}</p>
-                                @if(auth()->user()->isAdmin())
+                                <p class="text-sm font-semibold text-gray-900">{{ $apiAuth->name() }}</p>
+                                <p class="text-xs text-gray-500">{{ $apiAuth->email() }}</p>
+                                @if($apiAuth->isAdmin())
                                     <span class="inline-block mt-1 px-2 py-0.5 text-xs bg-[#3B82F6] text-white rounded-full">Администратор</span>
                                 @endif
                             </div>
@@ -56,10 +56,9 @@
                             <a href="{{ route('user.hotels.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Мои дома</a>
                             <a href="{{ route('user.rooms.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Мои квартиры</a>
                             
-                            @if(auth()->user()->isAdmin())
+                            @if($apiAuth->isAdmin())
                                 <div class="border-t border-gray-100 my-1"></div>
                                 <a href="{{ route('admin.moderation.index') }}" class="block px-4 py-2 text-sm text-[#3B82F6] hover:bg-blue-50 font-medium">Модерация</a>
-                                <a href="{{ route('admin.hotels.create') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Добавить дом</a>
                             @endif
                             
                             <div class="border-t border-gray-100 my-1"></div>
@@ -72,7 +71,7 @@
                 @else
                     <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:text-gray-900 transition-colors">Вход</a>
                     <a href="{{ route('register') }}" class="px-4 py-2 text-sm bg-[#3B82F6] text-white hover:bg-[#2563EB] rounded-lg transition-colors">Регистрация</a>
-                @endauth
+                @endif
 
                 <!-- Мобильное меню -->
                 <div class="md:hidden">
@@ -90,10 +89,10 @@
                          class="absolute right-0 left-0 top-16 bg-white border-t border-gray-100 py-4 px-4 shadow-lg">
                         <nav class="flex flex-col space-y-3">
                             <a href="{{ route('hotels.index') }}" class="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Квартиры</a>
-                            @auth
+                            @if($apiAuth->check())
                                 <a href="{{ route('bookings.index') }}" class="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Мои бронирования</a>
-                                @if(auth()->user()->isAdmin())
-                                    <a href="{{ route('admin.hotels.create') }}" class="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Добавить дом</a>
+                                @if($apiAuth->isAdmin())
+                                    <a href="{{ route('admin.moderation.index') }}" class="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Модерация</a>
                                 @endif
                                 <div class="border-t border-gray-100 my-2"></div>
                                 <form method="POST" action="{{ route('logout') }}">
@@ -104,7 +103,7 @@
                                 <div class="border-t border-gray-100 my-2"></div>
                                 <a href="{{ route('login') }}" class="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Вход</a>
                                 <a href="{{ route('register') }}" class="block px-3 py-2 text-gray-700 hover:bg-gray-50 rounded-lg">Регистрация</a>
-                            @endauth
+                            @endif
                         </nav>
                     </div>
                 </div>

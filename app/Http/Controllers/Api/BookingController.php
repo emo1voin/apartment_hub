@@ -154,4 +154,20 @@ class BookingController extends Controller
             'message' => 'Бронирование отменено'
         ]);
     }
+
+    public function cancel(Request $request, Booking $booking): JsonResponse
+    {
+        if ($booking->user_id !== $request->user()->id && !$request->user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Нет прав'], 403);
+        }
+
+        if (!$booking->canBeCancelled()) {
+            return response()->json(['success' => false, 'message' => 'Невозможно отменить это бронирование'], 400);
+        }
+
+        $booking->update(['status' => 'cancelled', 'cancelled_at' => now()]);
+
+        return response()->json(['success' => true, 'message' => 'Бронирование отменено']);
+    }
+
 }

@@ -13,7 +13,7 @@ class BookingSystemSeeder extends Seeder
 {
     public function run(): void
     {
-        // Создаем админа
+
         $admin = User::create([
             'name' => 'Администратор',
             'email' => 'admin@booking.com',
@@ -22,7 +22,7 @@ class BookingSystemSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Создаем обычного пользователя
+
         $user = User::create([
             'name' => 'Иван Иванов',
             'email' => 'user@booking.com',

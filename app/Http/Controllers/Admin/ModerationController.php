@@ -5,82 +5,47 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Hotel;
 use App\Models\Room;
+use App\Services\ApiService;
 use Illuminate\Http\Request;
 
 class ModerationController extends Controller
 {
+    public function __construct(private ApiService $api) {}
+
     public function index()
     {
-        $pendingHotels = Hotel::pending()
-            ->with('owner')
-            ->whereNotNull('owner_id')
-            ->latest()
-            ->get();
-        
-        $pendingRooms = Room::pending()
-            ->with(['hotel.owner'])
-            ->whereHas('hotel', function($query) {
-                $query->whereNotNull('owner_id');
-            })
-            ->latest()
-            ->get();
-        
+        $pendingHotels = Hotel::pending()->with('owner')->whereNotNull('owner_id')->latest()->get();
+        $pendingRooms = Room::pending()->with(['hotel.owner'])
+            ->whereHas('hotel', fn($q) => $q->whereNotNull('owner_id'))->latest()->get();
+
         return view('admin.moderation.index', compact('pendingHotels', 'pendingRooms'));
     }
 
-    public function approveHotel(Hotel $hotel)
+    public function approveHotel($id)
     {
-        $hotel->update([
-            'status' => 'approved',
-            'approved_at' => now(),
-            'approved_by' => auth()->id(),
-            'is_active' => true,
-        ]);
-
-        return redirect()->back()->with('success', 'Дом одобрен!');
+        $result = $this->api->post("moderation/hotels/{$id}/approve");
+        return redirect()->back()->with('success', $result['message'] ?? 'Дом одобрен!');
     }
 
-    public function rejectHotel(Request $request, Hotel $hotel)
+    public function rejectHotel(Request $request, $id)
     {
-        $request->validate([
-            'rejection_reason' => 'required|string|max:500'
-        ]);
-
-        $hotel->update([
-            'status' => 'rejected',
+        $result = $this->api->post("moderation/hotels/{$id}/reject", [
             'rejection_reason' => $request->rejection_reason,
-            'is_active' => false,
         ]);
-
-        return redirect()->back()->with('success', 'Дом отклонён.');
+        return redirect()->back()->with('success', $result['message'] ?? 'Дом отклонён.');
     }
 
-    public function approveRoom(Room $room)
+    public function approveRoom($id)
     {
-        $room->update([
-            'status' => 'approved',
-            'approved_at' => now(),
-            'approved_by' => auth()->id(),
-            'is_active' => true,
-            'is_available' => true,
-        ]);
-
-        return redirect()->back()->with('success', 'Квартира одобрена!');
+        $result = $this->api->post("moderation/rooms/{$id}/approve");
+        return redirect()->back()->with('success', $result['message'] ?? 'Квартира одобрена!');
     }
 
-    public function rejectRoom(Request $request, Room $room)
+    public function rejectRoom(Request $request, $id)
     {
-        $request->validate([
-            'rejection_reason' => 'required|string|max:500'
-        ]);
-
-        $room->update([
-            'status' => 'rejected',
+        $result = $this->api->post("moderation/rooms/{$id}/reject", [
             'rejection_reason' => $request->rejection_reason,
-            'is_active' => false,
-            'is_available' => false,
         ]);
-
-        return redirect()->back()->with('success', 'Квартира отклонена.');
+        return redirect()->back()->with('success', $result['message'] ?? 'Квартира отклонена.');
     }
 }
