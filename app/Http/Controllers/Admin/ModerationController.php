@@ -14,9 +14,9 @@ class ModerationController extends Controller
 
     public function index()
     {
-        $pendingHotels = Hotel::pending()->with('owner')->whereNotNull('owner_id')->latest()->get();
+        $pendingHotels = Hotel::pending()->with('owner')->whereNotNull('owner_id')->latest()->paginate(10, ['*'], 'hotels_page');
         $pendingRooms = Room::pending()->with(['hotel.owner'])
-            ->whereHas('hotel', fn($q) => $q->whereNotNull('owner_id'))->latest()->get();
+            ->whereHas('hotel', fn($q) => $q->whereNotNull('owner_id'))->latest()->paginate(10, ['*'], 'rooms_page');
 
         return view('admin.moderation.index', compact('pendingHotels', 'pendingRooms'));
     }

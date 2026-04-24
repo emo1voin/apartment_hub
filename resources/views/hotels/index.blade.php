@@ -43,16 +43,7 @@
                 </div>
             </form>
 
-            <!-- Популярные направления -->
-            <div class="flex flex-wrap justify-center gap-2">
-                <span class="text-sm text-gray-400 mr-2 self-center">Популярно:</span>
-                @foreach(['Москва', 'Санкт-Петербург', 'Сочи', 'Казань'] as $city)
-                    <a href="{{ route('hotels.index', ['search' => $city]) }}"
-                       class="px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-full text-sm text-gray-700 transition-all">
-                        {{ $city }}
-                    </a>
-                @endforeach
-            </div>
+
         </div>
     </div>
 

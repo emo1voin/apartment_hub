@@ -35,10 +35,9 @@ class HotelController extends Controller
 
     public function show($id)
     {
-        $hotel = Hotel::with(['rooms' => function ($q) {
-            $q->approved()->where('is_active', true);
-        }, 'amenities', 'reviews.user'])->findOrFail($id);
+        $hotel = Hotel::with(['amenities', 'reviews.user'])->findOrFail($id);
+        $rooms = $hotel->rooms()->approved()->where('is_active', true)->paginate(12);
 
-        return view('hotels.show', compact('hotel'));
+        return view('hotels.show', compact('hotel', 'rooms'));
     }
 }

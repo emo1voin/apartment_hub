@@ -15,7 +15,7 @@
 
         <!-- Дома на модерации -->
         <div class="mb-12">
-            <h2 class="text-2xl font-medium text-gray-900 mb-6">Дома на модерации ({{ $pendingHotels->count() }})</h2>
+            <h2 class="text-2xl font-medium text-gray-900 mb-6">Дома на модерации ({{ $pendingHotels->total() }})</h2>
             
             @forelse($pendingHotels as $hotel)
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
@@ -43,11 +43,15 @@
             @empty
                 <p class="text-gray-500">Нет домов на модерации</p>
             @endforelse
+
+            @if($pendingHotels->hasPages())
+                <div class="mt-6">{{ $pendingHotels->links() }}</div>
+            @endif
         </div>
 
         <!-- Квартиры на модерации -->
         <div>
-            <h2 class="text-2xl font-medium text-gray-900 mb-6">Квартиры на модерации ({{ $pendingRooms->count() }})</h2>
+            <h2 class="text-2xl font-medium text-gray-900 mb-6">Квартиры на модерации ({{ $pendingRooms->total() }})</h2>
             
             @forelse($pendingRooms as $room)
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-4">
@@ -80,6 +84,10 @@
             @empty
                 <p class="text-gray-500">Нет квартир на модерации</p>
             @endforelse
+
+            @if($pendingRooms->hasPages())
+                <div class="mt-6">{{ $pendingRooms->links() }}</div>
+            @endif
         </div>
     </div>
 </div>

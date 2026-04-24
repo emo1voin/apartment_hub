@@ -15,6 +15,16 @@ class ReviewController extends Controller
         $result = $this->api->post("hotels/{$hotelId}/reviews", [
             'rating' => $request->rating,
             'comment' => $request->comment,
+            'title' => $request->title,
+            'pros' => $request->pros,
+            'cons' => $request->cons,
+            'rating_cleanliness' => $request->rating_cleanliness,
+            'rating_comfort' => $request->rating_comfort,
+            'rating_location' => $request->rating_location,
+            'rating_service' => $request->rating_service,
+            'rating_value' => $request->rating_value,
+            'travel_type' => $request->travel_type,
+            'is_recommended' => $request->has('is_recommended') ? 1 : 0,
         ]);
 
         if (!empty($result['success'])) {
@@ -27,19 +37,13 @@ class ReviewController extends Controller
     public function update(Request $request, $id)
     {
         $review = Review::findOrFail($id);
-        $review->update([
-            'rating' => $request->rating,
-            'comment' => $request->comment,
-        ]);
-
+        $review->update($request->only(['rating', 'comment', 'title']));
         return redirect()->back()->with('success', 'Отзыв обновлён!');
     }
 
     public function destroy($id)
     {
-        $review = Review::findOrFail($id);
-        $review->delete();
-
+        Review::withTrashed()->where('id', $id)->forceDelete();
         return redirect()->back()->with('success', 'Отзыв удалён!');
     }
 }

@@ -29,7 +29,7 @@ class UserHotelController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->only(['name', 'description', 'short_description', 'address', 'city', 'country', 'phone', 'email']);
+        $data = $request->only(['name', 'description', 'short_description', 'address', 'city', 'country', 'phone', 'email', 'stars']);
         $hasFile = $request->hasFile('main_image');
         if ($hasFile) $data['main_image'] = $request->file('main_image');
 
@@ -49,7 +49,7 @@ class UserHotelController extends Controller
 
     public function update(Request $request, $id)
     {
-        $data = $request->only(['name', 'description', 'short_description', 'address', 'city', 'country', 'phone', 'email']);
+        $data = $request->only(['name', 'description', 'short_description', 'address', 'city', 'country', 'phone', 'email', 'stars']);
         $hasFile = $request->hasFile('main_image');
         if ($hasFile) $data['main_image'] = $request->file('main_image');
 

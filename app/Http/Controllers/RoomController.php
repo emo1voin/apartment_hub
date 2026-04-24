@@ -11,7 +11,7 @@ class RoomController extends Controller
     public function index(Request $request, $hotelId)
     {
         $hotel = Hotel::findOrFail($hotelId);
-        $rooms = $hotel->rooms()->approved()->where('is_active', true)->get();
+        $rooms = $hotel->rooms()->approved()->where('is_active', true)->paginate(12);
 
         return view('rooms.index', compact('rooms', 'hotel'));
     }

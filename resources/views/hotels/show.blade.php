@@ -155,7 +155,7 @@
     <h2 class="text-3xl font-bold text-gray-900 mb-6">Доступные квартиры</h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($hotel->rooms as $room)
+        @forelse($rooms as $room)
             <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
                 <div class="h-48 overflow-hidden">
                     @if($room->main_image)
@@ -242,6 +242,12 @@
             </div>
         @endforelse
     </div>
+
+    @if($rooms->hasPages())
+        <div class="mt-8">
+            {{ $rooms->links() }}
+        </div>
+    @endif
 
     <!-- Раздел отзывов -->
     @include('partials.reviews')

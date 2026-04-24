@@ -91,6 +91,17 @@
                     </div>
                 </div>
 
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Количество звёзд *</label>
+                    <select name="stars" required
+                            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#3B82F6]">
+                        <option value="">-- Выберите --</option>
+                        @for($i = 1; $i <= 5; $i++)
+                            <option value="{{ $i }}" {{ old('stars', $hotel->stars) == $i ? 'selected' : '' }}>{{ $i }} {{ $i == 1 ? 'звезда' : ($i < 5 ? 'звезды' : 'звёзд') }} {{ str_repeat('★', $i) }}</option>
+                        @endfor
+                    </select>
+                </div>
+
                 <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-xl mb-6">
                     <p class="text-sm">После сохранения изменений дом будет отправлен на повторную модерацию.</p>
                 </div>

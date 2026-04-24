@@ -41,6 +41,7 @@ class UserHotelController extends Controller
             'country' => 'required|string|max:100',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
+            'stars' => 'nullable|integer|min:1|max:5',
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
@@ -78,6 +79,7 @@ class UserHotelController extends Controller
             'country' => 'required|string|max:100',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
+            'stars' => 'nullable|integer|min:1|max:5',
             'main_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
