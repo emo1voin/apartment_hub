@@ -9,10 +9,10 @@
         <div class="container mx-auto px-4 lg:px-8 py-12 lg:py-20 max-w-6xl">
             <div class="text-center mb-12">
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight leading-tight">
-                    Найдите <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#3B82F6] to-[#60A5FA]">идеальную</span> квартиру для отдыха
+                    Отдыхайте <span class="text-[#3B82F6]">выгоднее</span>
                 </h1>
                 <p class="text-base md:text-lg text-gray-500 max-w-2xl mx-auto">
-                    Забронируйте дом вашей мечты в любом городе
+                    Будьте как дома
                 </p>
             </div>
 

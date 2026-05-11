@@ -10,7 +10,6 @@ class LogAllRequests
 {
     public function handle(Request $request, Closure $next)
     {
-        // Логируем ВСЕ POST запросы
         if ($request->isMethod('POST')) {
             Log::info('=== POST REQUEST RECEIVED ===', [
                 'url' => $request->fullUrl(),

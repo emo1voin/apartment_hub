@@ -7,9 +7,7 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
-/**
- * Внутренний API сервис - вызывает API через внутренний sub-request
- */
+
 class ApiService
 {
     private function getToken(): ?string
@@ -32,7 +30,6 @@ class ApiService
                 $request->headers->set('Authorization', 'Bearer ' . $token);
             }
 
-            // Используем Router напрямую, минуя HTTP kernel и middleware типа CSRF
             /** @var Router $router */
             $router = app(Router::class);
             $response = $router->dispatch($request);

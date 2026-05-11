@@ -24,7 +24,6 @@ class AppServiceProvider extends ServiceProvider
             return $user->role === 'admin';
         });
 
-        // Делаем AuthService доступным во всех Blade шаблонах
         view()->composer('*', function ($view) {
             $auth = app(\App\Services\AuthService::class);
             $view->with('apiAuth', $auth);

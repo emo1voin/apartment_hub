@@ -23,13 +23,6 @@
                                 </svg>
                                 Редактировать
                             </a>
-                            <a href="{{ route('admin.rooms.create', $hotel) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-[#3B82F6] hover:bg-[#2563EB] text-white rounded-lg transition-colors">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                Добавить квартиру
-                            </a>
                             <form action="{{ route('admin.hotels.destroy', $hotel) }}" 
                                   method="POST" 
                                   onsubmit="return confirm('Вы уверены, что хотите удалить этот дом? Все квартиры и бронирования также будут удалены.');"

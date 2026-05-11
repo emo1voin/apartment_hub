@@ -18,3 +18,5 @@ DB_DATABASE=apartment_hub
 DB_USERNAME=student
 DB_PASSWORD=student
 ```
+
+http://127.0.0.1:8000/api/docs

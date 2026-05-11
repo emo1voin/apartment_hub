@@ -12,7 +12,6 @@ class ReviewController extends Controller
 {
     public function store(Request $request, Hotel $hotel): JsonResponse
     {
-        // Проверяем, не оставлял ли пользователь уже отзыв
         $existing = Review::withTrashed()
             ->where('user_id', $request->user()->id)
             ->where('hotel_id', $hotel->id)
